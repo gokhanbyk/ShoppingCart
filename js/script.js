@@ -46,9 +46,11 @@ function filtreleme(element) {
 }
 
 
-
+// console.log(!isChecked)
+let isChecked = false
 
 function sepeteEkle() {
+
     const anaDiv = document.createElement('div')
     anaDiv.className = 'sepetUrunu w-100'
 
@@ -101,7 +103,7 @@ function localStorageUrunleri() {
         div.classList.add('d-flex', 'align-items-center', 'justify-content-between', 'mt-2', 'bg-white', 'border', 'border-dark', 'p-4', 'rounded-2')
 
         const urunAdi = document.createElement('h4')
-        urunAdi.textContent = urun
+        urunAdi.textContent = urun.name
 
         const iconDiv = document.createElement('div')
         iconDiv.setAttribute('class', 'd-flex gap-3')
@@ -116,6 +118,7 @@ function localStorageUrunleri() {
 
         trash.addEventListener('click', sil)
 
+        isCheckedMi(urun, check, urunAdi, div)
 
         iconDiv.append(check)
         iconDiv.append(trash)
@@ -127,28 +130,58 @@ function localStorageUrunleri() {
 
         sepet.append(anaDiv)
 
+
     })
 
 }
 
 
+function isCheckedMi(urun, check, urunAdi, div) {
+    if (urun.isChecked === true) {
+
+        //? check iconunu etkiler
+        check.classList.toggle('text-success')
+        check.classList.toggle('text-warning')
+        //? check iconunu etkiler
+
+        //! inputtan gelen value değerini değiştirmek için
+        urunAdi.classList.toggle('text-decoration-underline')
+        //! inputtan gelen value değerini değiştirmek için
+
+        //* ana divin bg'sini değiştirmek için
+        div.classList.toggle('bg-white')
+        div.classList.toggle('bg-light')
+        //* ana divin bg'sini değiştirmek için
+    }
+}
+
 
 
 function checkle() {
-    //? check iconunu etkiler
-    this.classList.toggle('text-success')
-    this.classList.toggle('text-warning')
-    //? check iconunu etkiler
+    let itemName = this.parentElement.previousElementSibling.textContent
+    //! isChecked i güncelleme
+    urunler.forEach(urun => {
+        if (urun.name == itemName) {
 
-    //! inputtan gelen value değerini değiştirmek için
-    this.parentElement.previousElementSibling.classList.toggle('text-decoration-underline')
-    //! inputtan gelen value değerini değiştirmek için
+            urun.isChecked = !urun.isChecked
 
-    //* ana divin bg'sini değiştirmek için
-    this.parentElement.parentElement.classList.toggle('bg-white')
-    this.parentElement.parentElement.classList.toggle('bg-light')
-    //* ana divin bg'sini değiştirmek için
+            //? check iconunu etkiler
+            this.classList.toggle('text-success')
+            this.classList.toggle('text-warning')
+            //? check iconunu etkiler
 
+            //! inputtan gelen value değerini değiştirmek için
+            this.parentElement.previousElementSibling.classList.toggle('text-decoration-underline')
+            //! inputtan gelen value değerini değiştirmek için
+
+            //* ana divin bg'sini değiştirmek için
+            this.parentElement.parentElement.classList.toggle('bg-white')
+            this.parentElement.parentElement.classList.toggle('bg-light')
+            //* ana divin bg'sini değiştirmek için
+
+            updateCheckedLocal(urun.name, urun.isChecked)
+        }
+    })
 }
 
 function sil() {
@@ -161,8 +194,12 @@ function sil() {
 
 
 function addToLocalStorage() {
-    let urun = input.value.trim()
-
+    let urun = {
+        'name': input.value.trim(),
+        'isChecked': isChecked
+    }
+    // let urun = input.value.trim()
+    // console.log(urun)
     urunler.push(urun)
 
     console.log(urunler)
@@ -186,3 +223,19 @@ function removeFromLocalStorage(urun) {
 }
 
 // localStorage.clear()
+
+function updateCheckedLocal(itemName, isChecked) {
+
+
+    urunler.map(urun => {
+        // console.log(urun.name == itemName)
+        if (urun.name == itemName) {
+            urun.isChecked = isChecked
+        }
+    })
+
+    console.log(urunler)
+
+    localStorage.setItem('urunler', JSON.stringify(urunler))
+
+}
